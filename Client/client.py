@@ -2,7 +2,6 @@ import argparse, sys
 import requests, json
 
 def usage():
-	print ("client <-i xx> [-s xx] [-u xx]")
 	print ("Example usage: ")
 	print ("		user -o 25   ==>  open account 25")
 	print ("		user -q 25   ==>  query info on account 25")

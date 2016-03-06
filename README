@@ -1,0 +1,70 @@
+#################
+What is this
+#################
+1. This is a simple but fully concurrent and RESTful banking system for demo purpose, implemented using Golang
+2. It includes the Server, the Clients and a testbench
+3. Functionality:  	
+				* open an account
+    			* deposit to account
+    			* withdraw from account
+    			* transfer between 2 accounts
+    			* query a specific account
+    			* Super user only: query all accounts
+    			* Super user only: save server state
+
+4. Features:	* RESTful
+				* Full concurrent: server serves requests concurrently
+				* Data access protected from concurrency: data access is made from one single go routine(a thread), all data access requests served by this thread. And this thread is not doing any time consuming operations to guarantee performance
+				* Server maintains a commit log by time order, and use it to save & restore state
+
+
+#################
+Usage of client.sh
+#################
+	print ("		user -o 25   ==>  open account 25")
+	print ("		user -q 25   ==>  query info on account 25")
+	print (" 	    user -d 25 3000   ==>  deposit $3000 to account 25")
+	print ("		user -w 25 3000   ==>  withdraw $3000 from account 25")
+	print ("		user -t 25 50 3000	  ==>  transfer $3000 from account 25 to account 50")
+	print ("		user -i 15337   ==>  As a super user, list all accounts")
+	print ("		user -i 15337 -s  ==>  As a super user, tell the server to save its state to file")
+	print ("		user -a 192.168.0.1 -o 25 ==>  instead of default localhost:8035, connects to server 192.168.0.1 and open account 25")
+
+	*note superuserid is hard coded in config.json
+
+#################
+Usage of webpage client
+#################
+http://localhost:8035/su/15337/accounts 	==>  	superuser list all accounts
+http://localhost:8035/account/0				==> 	query account 0
+
+
+#################
+What does the testbench do
+#################
+testbench.sh does following by forking:
+0. Open the IRS account "0"
+1. Open 100 accounts by forking 100 child processes
+3. Wait for these 100 processes to finish
+
+4. Fork another 100 child processes
+5. Deposit $200 to each account, each operation is in a child process
+6. Wait for these 100 processes to finish
+
+7. Fork another 200 child processes
+8. Withdraw $100 from each account, each operation is in a child process
+9. Transfer $1 from each account to the "IRS" account "0", each operation is in a child process
+10. Wait for these 200 child processes to finish
+
+11. Check the balance of IRS account 0, it should have $100
+12. Check balances of other 100 accounts, they should all have $99
+
+
+##################
+Thoughts of improvements for it to scale
+##################
+1. State(commit log) should be saved to a DB, NoSQL should be better for this use
+2. Server currently saves data in memory, data should also be updated to a DB as updates happen. Then the server acts like a write through memcache
+3. Sharding is easy, since accounts are relatively separate from each other
+4. Once sharded and server instances running in a cluster, transfer needs to be redesigned to guarantee coherency of the transaction
+5. User authentication should be added
