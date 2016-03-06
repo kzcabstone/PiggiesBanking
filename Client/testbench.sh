@@ -15,7 +15,7 @@ for i in `seq $num_of_clients`; do # start $num_of_clients jobs in parallel
   client.sh -o $i &
 done
 # Wait for all parallel jobs to finish
-while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
+while [ 1 ]; do fg 2> /dev/null; [ $? -eq 1 ] && break; done
 
 
 ######  deposit 200 to each account
@@ -24,7 +24,7 @@ for i in `seq $num_of_clients`; do
   client.sh -d $i 200 &
 done
 # Wait for all parallel jobs to finish
-while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
+while [ 1 ]; do fg 2> /dev/null; [ $? -eq 1 ] && break; done
 
 ######  withdraw 100 from each account and transfer 1 to IRS
 echo "Withdraw 100 from each account, and transfer 1 to account 0"
@@ -33,7 +33,7 @@ for i in `seq $num_of_clients`; do
   client.sh -t $i 0 1 &
 done
 # Wait for all parallel jobs to finish
-while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
+while [ 1 ]; do fg 2> /dev/null; [ $? -eq 1 ] && break; done
 
 ########### Now check the IRS account, it should have $100
 echo "Now check the IRS account, it should have $num_of_clients"
