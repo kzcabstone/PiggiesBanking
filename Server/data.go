@@ -154,6 +154,7 @@ func processAccountCommand(accountcmd account_mutator_cmd) {
 	if cmd.Cmdtype == 1 {
 		if exists {
 			log.Printf("processAccountCommand(): account already exists. %s", cmd.Aid)
+			accountcmd.Result_channel <- "OK"
 			return
 		} 
 
